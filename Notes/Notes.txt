@@ -1,0 +1,15 @@
+Need to find a way to implement my own libraries similar to arduino
+    *
+
+Need to modularize matrix_funcs.cpp ** 
+
+
+Need to think about memory constraint on arduino
+    * There is a way to make variables not stored on flash memory.
+    
+
+Need to add button functionality to change modes
+    * Could be done by making mode class
+        - Set of patterns
+        - Behavior on switch
+        - 

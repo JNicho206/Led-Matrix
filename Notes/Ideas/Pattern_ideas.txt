@@ -1,0 +1,14 @@
+--- Simple --- 
+* Rotating lines
+
+
+--- Moderate ---
+* Grass growing
+    - Could be cut by hardware interrupt (button)
+
+--- Advanced ---
+* Rain falling down
+* Weather dependent display
+    - Rain
+    - Sunny
+    - Snow
