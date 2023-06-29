@@ -2,6 +2,8 @@
 #include <stdio.h>
 
 
+Color::Color() : red(random(256)), blue(random(256)), green(random(256)) {}
+
 Color::Color(int r, int g, int b)
 {
   red = r; green = g; blue = b;

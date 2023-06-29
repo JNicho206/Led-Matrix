@@ -16,11 +16,18 @@ class Color {
         /**
          * @brief Construct a new Color object
          * 
+         */
+        Color();
+
+        /**
+         * @brief Construct a new Color object
+         * 
          * @param r Red value 0-255
          * @param b Blue value 0-255 
          * @param g Green value 0-255
          */
         Color (int r, int b, int g);
+
 
         /**
          * @brief Prints RGB values.
