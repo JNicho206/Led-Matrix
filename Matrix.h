@@ -1,5 +1,6 @@
-#include "Adafruit_NeoMatrix/Adafruit_NeoMatrix.h"
+#include <Adafruit_NeoMatrix.h>
 #include <Color.h>
+#include <PixelArt.h>
 
 #define UPLEFT 0
 #define UP 1
@@ -12,9 +13,11 @@
 
 class Matrix : public Adafruit_NeoMatrix {
     private:
-        
+        Adafruit_NeoMatrix *matrix;
     public:
-        Matrix(uint16_t w, uint16_t h, uint8_t pin, neoPixelType type)
-        : Adafruit_NeoMatrix(w, h, pin, type) {}
-
+        Matrix(uint16_t w, uint16_t h, uint8_t pin);
+        void drawPixelArt(const PixelArt& art);
+        int adjacent(int origin, int direction);
+        bool isEdge(int row, int col, int direction);
+        ~Matrix();
 };
