@@ -1,5 +1,6 @@
+#ifndef _H_MATRIX_
+#define _H_MATRIX
 #include <Adafruit_NeoMatrix.h>
-#include <Color.h>
 #include <PixelArt.h>
 
 #define UPLEFT 0
@@ -11,7 +12,13 @@
 #define DOWNLEFT 6
 #define LEFT 7
 
-class Matrix : public Adafruit_NeoMatrix {
+struct MatrixPair
+{
+    uint8_t row, col;
+    MatrixPair(uint8_t r, uint8_t c) : row(r), col(c) {};
+};
+
+class Matrix {
     private:
         Adafruit_NeoMatrix *matrix;
     public:
@@ -20,4 +27,11 @@ class Matrix : public Adafruit_NeoMatrix {
         int adjacent(int origin, int direction);
         bool isEdge(int row, int col, int direction);
         ~Matrix();
+        void clear();
+        void show();
+        uint8_t toSingle(const MatrixPair& p);
+        MatrixPair toPair(uint8_t);
+        void setPixel(uint8_t n, uint32_t c);
+        void setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b);
 };
+#endif

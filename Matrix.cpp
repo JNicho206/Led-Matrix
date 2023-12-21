@@ -1,25 +1,95 @@
 #include <Matrix.h>
 
-Matrix::Matrix(int w, int h, int pin) 
+
+Matrix::Matrix(uint16_t w, uint16_t h, uint8_t pin)
 {
-    matrix = new Adafruit_NeoMatrix(w, h, pin, NEO_TILE_BOTTOM   + NEO_TILE_LEFT   + NEO_TILE_ROWS   + NEO_TILE_PROGRESSIVE +
-                                    NEO_MATRIX_TOP + NEO_MATRIX_LEFT + NEO_MATRIX_ROWS + NEO_MATRIX_ZIGZAG, NEO_GRB + NEO_KHZ800);
+    matrix = new Adafruit_NeoMatrix(int(w), int(h), pin, NEO_MATRIX_BOTTOM     + NEO_MATRIX_RIGHT + NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
+                                                        NEO_GRB            + NEO_KHZ800);
     matrix->begin();
-    matrix->setBrightness(40);
+    matrix->setBrightness(20);
     matrix->clear();
 }
 
-Matrix::drawPixelArt(const PixelArt &art)
+uint8_t Matrix::toSingle(const MatrixPair& p)
+{
+    const int cols = 8;
+    uint8_t col;
+    // Reverse the column index on every alternate row
+    if (p.row % 2 == 1) {
+        col = cols - 1 - p.col;
+    }
+    uint8_t single = p.row * cols + col;
+    return single;
+}
+
+MatrixPair Matrix::toPair(uint8_t n)
+{
+    const int cols = 8;
+    uint8_t row = n / cols;
+    uint8_t col = n % cols;
+
+    // Reverse the column index on every alternate row
+    if (row % 2 == 1) {
+        col = cols - 1 - col;
+    }
+    return MatrixPair(row, col);
+}
+
+void Matrix::drawPixelArt(const PixelArt &art)
 {
     matrix->clear();
-    for (int c = 0; c < art.getWidth(); c++)
+    for (int i = 0; i < 64; i++)
     {
-        for (int r = 0; r < art.getHeight(); r++)
-        {
-            matrix.drawPixel(r,c, colors[r][c]);
-        }
+        MatrixPair p = toPair(i);
+        RGBTriple c = art.getPixel(p.row, p.col);
+        matrix->setPixelColor(i, c.getR(), c.getG(), c.getB());
     }
-    matrix.show();
+    matrix->show();
+}
+
+void Matrix::drawTree()
+{
+    RGBTriple tree_green = RGBTriple(30,255,0);
+    RGBTriple blank = RGBTriple();
+    RGBTriple wood = RGBTriple(200,50, 0);
+    const RGBTriple christmas_tree_colors[][8] = {
+        { // R1
+        blank, blank, blank, tree_green,
+        tree_green, blank, blank, blank
+        },
+        { // R2
+        blank, blank, blank, tree_green,
+        RGBTriple(255, 0, 100), blank, blank, blank
+        },
+        { // R3
+        blank, blank, RGBTriple(130,40,255), tree_green,
+        tree_green, tree_green, blank, blank
+        },
+        { // R4
+        blank, blank, tree_green, tree_green,
+        tree_green, RGBTriple(255,0,0), blank, blank
+        },
+        { // R5
+        blank, RGBTriple(100, 0, 200), tree_green, RGBTriple(80,0,200),
+        tree_green, tree_green, tree_green, blank
+        },
+        { // R6
+        tree_green, tree_green, RGBTriple(100, 100, 50), tree_green,
+        tree_green, tree_green, RGBTriple(0,0,255), tree_green
+        },
+        { // R7
+        tree_green, RGBTriple(255,30,40), tree_green, tree_green,
+        tree_green, RGBTriple(50,0,255), tree_green, RGBTriple(255,0,0)
+        },
+        { // R8
+        blank, blank, blank, wood,
+        wood, blank, blank, blank
+        }
+    };
+    Art8x8 christmas_tree = Art8x8(christmas_tree_colors);
+    drawPixelArt(christmas_tree);
+    delay(200);
+
 }
 
 bool Matrix::isEdge(int r, int c, int direction) 
@@ -216,4 +286,26 @@ Matrix::~Matrix()
 {
     matrix->clear();
     delete matrix;
+}
+
+void Matrix::clear() 
+{
+    matrix->clear();
+}
+
+void Matrix::show()
+{
+    matrix->show();
+}
+
+void Matrix::setPixel(uint8_t n, uint32_t c)
+{
+    matrix->setPixelColor(n, c);
+    show();
+}
+
+void Matrix::setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b)
+{
+    matrix->setPixelColor(n, r, g, b);
+    show();
 }
