@@ -3,16 +3,18 @@
 #define _H_PIXELART_
 #include <stdint.h>
 #include <Color.h>
+#include <Pixel.h>
 class PixelArt
 {
     protected:
         int w, h;
-        RGBTriple** colors;
+        Pixel** pxmap;
     public:
         PixelArt(int w, int h) : w(w), h(h) {};
         virtual int getWidth() = 0;
         virtual int getHeight() = 0;
-        virtual RGBTriple getPixel(int r, int c) = 0;
+        virtual RGBTriple getPixelColor(uint8_t r, uint8_t c) = 0;
+        virtual Pixel getPixel(uint8_t r, uint8_t c);
         virtual ~PixelArt() {};
 };
 
@@ -23,7 +25,8 @@ class Art8x8 : public PixelArt
         // Art8x8(uint16_t** colors);
         Art8x8(RGBTriple** colors);
         Art8x8(RGBTriple colors[][8]);
-        RGBTriple getPixel(int r, int c);
+        Pixel getPixel(uint8_t r, uint8_t c);
+        RGBTriple getPixelColor(uint8_t r, uint8_t c);
         int getWidth();
         int getHeight();
         ~Art8x8();

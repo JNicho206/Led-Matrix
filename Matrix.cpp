@@ -1,13 +1,42 @@
 #include <Matrix.h>
-
+#include <Pixel.h>
 
 Matrix::Matrix(uint16_t w, uint16_t h, uint8_t pin)
 {
     matrix = new Adafruit_NeoMatrix(int(w), int(h), pin, NEO_MATRIX_BOTTOM     + NEO_MATRIX_RIGHT + NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
                                                         NEO_GRB            + NEO_KHZ800);
+    begin();
+    setBrightness(20);
+    clear();
+}
+
+void Matrix::begin()
+{
     matrix->begin();
-    matrix->setBrightness(20);
-    matrix->clear();
+}
+void Matrix::setBrightness(uint8_t b)
+{
+    matrix->setBrightness(b);
+}
+
+void Matrix::drawRainbow(uint16_t totalTime, uint16_t delayTime)
+{
+    for (int n = 0; n < totalTime / delay; n++)
+    {    
+        clear();
+        for (int i = 0; i < 63; i++)
+        {
+            setPixel(i, random(0, 200), random(0,200), random(0,200));
+        }
+        show();
+        delay(delayTime);
+    }
+}
+
+void Matrix::fireworks()
+{
+    //Maintain state of matrix inside object
+    //Each pixel value
 }
 
 uint8_t Matrix::toSingle(const MatrixPair& p)
@@ -37,14 +66,14 @@ MatrixPair Matrix::toPair(uint8_t n)
 
 void Matrix::drawPixelArt(const PixelArt &art)
 {
-    matrix->clear();
+    clear();
     for (int i = 0; i < 64; i++)
     {
         MatrixPair p = toPair(i);
         RGBTriple c = art.getPixel(p.row, p.col);
-        matrix->setPixelColor(i, c.getR(), c.getG(), c.getB());
+        setPixel(i, c.getR(), c.getG(), c.getB());
     }
-    matrix->show();
+    show();
 }
 
 void Matrix::drawTree()
@@ -301,11 +330,9 @@ void Matrix::show()
 void Matrix::setPixel(uint8_t n, uint32_t c)
 {
     matrix->setPixelColor(n, c);
-    show();
 }
 
 void Matrix::setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b)
 {
     matrix->setPixelColor(n, r, g, b);
-    show();
 }

@@ -41,13 +41,13 @@ Art8x8::Art8x8(RGBTriple** c) : PixelArt(8,8)
 
 Art8x8::Art8x8(RGBTriple c[][8]) : PixelArt(8,8)
 {
-    colors = new RGBTriple*[8];
+    pxmap = new Pixel*[8];
     for (int i = 0; i < 8; i++)
     {
-        colors[i] = new RGBTriple[8];
+        pxmap[i] = new Pixel[8];
         for (int j = 0; j < 8; j++)
         {
-            colors[i][j] = c[i][j];
+            pxmap[i][j] = Pixel(i, j, c[i][j]);
         }
     }
 }

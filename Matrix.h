@@ -29,9 +29,14 @@ class Matrix {
         ~Matrix();
         void clear();
         void show();
+        void setBrightness(uint8_t);
+        void begin();
         uint8_t toSingle(const MatrixPair& p);
         MatrixPair toPair(uint8_t);
         void setPixel(uint8_t n, uint32_t c);
         void setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b);
+        void drawRainbow(uint16_t totalTime, uint16_t delay);
+        void drawTree();
+        void fireworks();
 };
 #endif
