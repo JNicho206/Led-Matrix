@@ -13,6 +13,7 @@ class Pixel
         Pixel() : x(0), y(0), color(RGBTriple()) {};
         Pixel(uint8_t _x, uint8_t _y, RGBTriple _c) : x(_x), y(_y), color(_c) {};
         Pixel(uint8_t _x, uint8_t _y, uint8_t r, uint8_t g, uint8_t b) : x(_x), y(_y), color(RGBTriple(r,g,b)) {};
+        virtual RGBTriple getRGB(uint8_t r, uint8_t c);
 };
 
 class Particle : Pixel

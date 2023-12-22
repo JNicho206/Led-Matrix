@@ -70,7 +70,7 @@ void Matrix::drawPixelArt(const PixelArt &art)
     for (int i = 0; i < 64; i++)
     {
         MatrixPair p = toPair(i);
-        RGBTriple c = art.getPixel(p.row, p.col);
+        RGBTriple c = art.getPixelColor(p.row, p.col);
         setPixel(i, c.getR(), c.getG(), c.getB());
     }
     show();
