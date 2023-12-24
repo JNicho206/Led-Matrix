@@ -57,6 +57,11 @@ RGBTriple Art8x8::getPixelColor(uint8_t r, uint8_t c)
     return pxmap[r][c].getRGB(r, c);
 }
 
+Pixel Art8x8::getPixel(uint8_t r, uint8_t c)
+{
+    return pxmap[r][c];
+}
+
 int Art8x8::getHeight()
 {
     return h;

@@ -8,6 +8,7 @@
 #define MIN_BLUE 0
 #define MIN_GREEN 0
 
+typedef uint8_t cval;
 
 class RGBTriple
 {

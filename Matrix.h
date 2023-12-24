@@ -2,6 +2,7 @@
 #define _H_MATRIX
 #include <Adafruit_NeoMatrix.h>
 #include <PixelArt.h>
+#include <Pixel.h>
 
 #define UPLEFT 0
 #define UP 1
@@ -18,9 +19,17 @@ struct MatrixPair
     MatrixPair(uint8_t r, uint8_t c) : row(r), col(c) {};
 };
 
+struct MatrixSize
+{
+    uint8_t w, h;
+    MatrixSize(uint8_t _w, uint8_t _h) : w(_w), h(_h) {};
+};
+
+
 class Matrix {
     private:
         Adafruit_NeoMatrix *matrix;
+        MatrixSize size;
     public:
         Matrix(uint16_t w, uint16_t h, uint8_t pin);
         void drawPixelArt(const PixelArt& art);
@@ -35,8 +44,11 @@ class Matrix {
         MatrixPair toPair(uint8_t);
         void setPixel(uint8_t n, uint32_t c);
         void setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b);
+        void setPixel(uint8_t n, RGBTriple c);
         void drawRainbow(uint16_t totalTime, uint16_t delay);
+        void drawRainbow();
         void drawTree();
         void fireworks();
+        void updatePixel(AnimationPixelUpdate pxUpdate);
 };
 #endif

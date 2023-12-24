@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <Color.h>
 
+typedef uint8_t pxind;
+
 class Pixel
 {
     protected:
@@ -11,9 +13,11 @@ class Pixel
     
     public:
         Pixel() : x(0), y(0), color(RGBTriple()) {};
-        Pixel(uint8_t _x, uint8_t _y, RGBTriple _c) : x(_x), y(_y), color(_c) {};
-        Pixel(uint8_t _x, uint8_t _y, uint8_t r, uint8_t g, uint8_t b) : x(_x), y(_y), color(RGBTriple(r,g,b)) {};
-        virtual RGBTriple getRGB(uint8_t r, uint8_t c);
+        Pixel(pxind _x, pxind _y, RGBTriple _c) : x(_x), y(_y), color(_c) {};
+        Pixel(pxind _x, pxind _y, cval r, cval g, cval b) : x(_x), y(_y), color(RGBTriple(r,g,b)) {};
+        virtual RGBTriple getRGB(pxind r, pxind c);
+        uint8_t getX() { return x; }
+        uint8_t getY() { return y; }
 };
 
 class Particle : Pixel
@@ -21,8 +25,10 @@ class Particle : Pixel
     private:
         uint8_t counter;
     public:
-        Particle(uint8_t x, uint8_t y, RGBTriple color);
-        Particle(uint8_t x, uint8_t y, uint8_t r, uint8_t g, uint8_t b);
-}
+        Particle(pxind x, pxind y, RGBTriple color);
+        Particle(pxind x, pxind y, cval r, cval g, cval b);
+};
+
+
 
 #endif

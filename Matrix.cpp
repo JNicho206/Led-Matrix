@@ -5,6 +5,7 @@ Matrix::Matrix(uint16_t w, uint16_t h, uint8_t pin)
 {
     matrix = new Adafruit_NeoMatrix(int(w), int(h), pin, NEO_MATRIX_BOTTOM     + NEO_MATRIX_RIGHT + NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
                                                         NEO_GRB            + NEO_KHZ800);
+    size = MatrixSize(w, h);
     begin();
     setBrightness(20);
     clear();
@@ -19,12 +20,22 @@ void Matrix::setBrightness(uint8_t b)
     matrix->setBrightness(b);
 }
 
+void Matrix::drawRainbow()
+{
+    clear();
+    for (int i = 0; i < 64; i++)
+    {
+        setPixel(i, random(0, 200), random(0,200), random(0,200));
+    }
+    show();
+}
+
 void Matrix::drawRainbow(uint16_t totalTime, uint16_t delayTime)
 {
-    for (int n = 0; n < totalTime / delay; n++)
+    for (int n = 0; n < totalTime / delayTime; n++)
     {    
         clear();
-        for (int i = 0; i < 63; i++)
+        for (int i = 0; i < 64; i++)
         {
             setPixel(i, random(0, 200), random(0,200), random(0,200));
         }
@@ -335,4 +346,15 @@ void Matrix::setPixel(uint8_t n, uint32_t c)
 void Matrix::setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b)
 {
     matrix->setPixelColor(n, r, g, b);
+}
+
+void Matrix::setPixel(uint8_t n, RGBTriple c)
+{
+    matrix->setPixelColor(n, c.r, c.g, c.b);
+}
+
+void Matrix::updatePixel(AnimationPixelUpdate pxUpdate)
+{
+    setPixel(toSingle(pxUpdate.getPost()), pxUpdate.c);
+    show();
 }

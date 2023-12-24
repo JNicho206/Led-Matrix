@@ -25,11 +25,11 @@ class Art8x8 : public PixelArt
         // Art8x8(uint16_t** colors);
         Art8x8(RGBTriple** colors);
         Art8x8(RGBTriple colors[][8]);
-        Pixel getPixel(uint8_t r, uint8_t c);
-        RGBTriple getPixelColor(uint8_t r, uint8_t c);
-        int getWidth();
-        int getHeight();
-        ~Art8x8();
+        Pixel getPixel(uint8_t r, uint8_t c) override;
+        RGBTriple getPixelColor(uint8_t r, uint8_t c) override;
+        int getWidth() override;
+        int getHeight() override;
+        virtual ~Art8x8();
 
 };
 #endif
