@@ -3,6 +3,7 @@
 #include <Adafruit_NeoMatrix.h>
 #include <PixelArt.h>
 #include <Pixel.h>
+// #include <Animation.h>
 
 #define UPLEFT 0
 #define UP 1
@@ -21,8 +22,8 @@ struct MatrixPair
 
 struct MatrixSize
 {
-    uint8_t w, h;
-    MatrixSize(uint8_t _w, uint8_t _h) : w(_w), h(_h) {};
+    uint16_t w, h;
+    MatrixSize(uint16_t _w, uint16_t _h) : w(_w), h(_h) {};
 };
 
 
@@ -40,7 +41,13 @@ class Matrix {
         void show();
         void setBrightness(uint8_t);
         void begin();
+        void fillScreen(uint16_t c);
+        void setCursor(int x, int y);
+        void setTextWrap(bool b);
+        int width();
+        void print(const __FlashStringHelper * f);
         uint8_t toSingle(const MatrixPair& p);
+        uint8_t toSingle(pxind x, pxind y);
         MatrixPair toPair(uint8_t);
         void setPixel(uint8_t n, uint32_t c);
         void setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b);
@@ -49,6 +56,7 @@ class Matrix {
         void drawRainbow();
         void drawTree();
         void fireworks();
-        void updatePixel(AnimationPixelUpdate pxUpdate);
+        void drawParticle(Particle& p);
+        // void updatePixel(AnimationPixelUpdate pxUpdate);
 };
 #endif

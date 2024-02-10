@@ -1,11 +1,12 @@
 #include <Matrix.h>
 #include <Pixel.h>
 
-Matrix::Matrix(uint16_t w, uint16_t h, uint8_t pin)
+Matrix::Matrix(uint16_t w, uint16_t h, uint8_t pin) 
+    : 
+    size(MatrixSize(w, h)), 
+    matrix(new Adafruit_NeoMatrix(int(w), int(h), pin, NEO_MATRIX_BOTTOM     + NEO_MATRIX_RIGHT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+                                                        NEO_GRB            + NEO_KHZ800))
 {
-    matrix = new Adafruit_NeoMatrix(int(w), int(h), pin, NEO_MATRIX_BOTTOM     + NEO_MATRIX_RIGHT + NEO_MATRIX_ROWS + NEO_MATRIX_PROGRESSIVE,
-                                                        NEO_GRB            + NEO_KHZ800);
-    size = MatrixSize(w, h);
     begin();
     setBrightness(20);
     clear();
@@ -62,6 +63,18 @@ uint8_t Matrix::toSingle(const MatrixPair& p)
     return single;
 }
 
+uint8_t Matrix::toSingle(pxind x, pxind y)
+{
+    const int cols = 8;
+    uint8_t col;
+    // Reverse the column index on every alternate row
+    if (x % 2 == 1) {
+        col = cols - 1 - y;
+    }
+    uint8_t single = x * cols + col;
+    return single;
+}
+
 MatrixPair Matrix::toPair(uint8_t n)
 {
     const int cols = 8;
@@ -72,13 +85,13 @@ MatrixPair Matrix::toPair(uint8_t n)
     if (row % 2 == 1) {
         col = cols - 1 - col;
     }
-    return MatrixPair(row, col);
+    return MatrixPair(col, row);
 }
 
 void Matrix::drawPixelArt(const PixelArt &art)
 {
     clear();
-    for (int i = 0; i < 64; i++)
+    for (int i = 0; i < 63; i++)
     {
         MatrixPair p = toPair(i);
         RGBTriple c = art.getPixelColor(p.row, p.col);
@@ -93,43 +106,41 @@ void Matrix::drawTree()
     RGBTriple blank = RGBTriple();
     RGBTriple wood = RGBTriple(200,50, 0);
     const RGBTriple christmas_tree_colors[][8] = {
-        { // R1
-        blank, blank, blank, tree_green,
-        tree_green, blank, blank, blank
-        },
-        { // R2
-        blank, blank, blank, tree_green,
-        RGBTriple(255, 0, 100), blank, blank, blank
-        },
-        { // R3
-        blank, blank, RGBTriple(130,40,255), tree_green,
-        tree_green, tree_green, blank, blank
-        },
-        { // R4
-        blank, blank, tree_green, tree_green,
-        tree_green, RGBTriple(255,0,0), blank, blank
-        },
-        { // R5
-        blank, RGBTriple(100, 0, 200), tree_green, RGBTriple(80,0,200),
-        tree_green, tree_green, tree_green, blank
-        },
-        { // R6
-        tree_green, tree_green, RGBTriple(100, 100, 50), tree_green,
-        tree_green, tree_green, RGBTriple(0,0,255), tree_green
+        { // R8
+        blank, blank, blank, wood,
+        wood, blank, blank, blank
         },
         { // R7
         tree_green, RGBTriple(255,30,40), tree_green, tree_green,
         tree_green, RGBTriple(50,0,255), tree_green, RGBTriple(255,0,0)
         },
-        { // R8
-        blank, blank, blank, wood,
-        wood, blank, blank, blank
+        { // R6
+        tree_green, tree_green, RGBTriple(100, 100, 50), tree_green,
+        tree_green, tree_green, RGBTriple(0,0,255), tree_green
+        },
+        { // R5
+        blank, RGBTriple(100, 0, 200), tree_green, RGBTriple(80,0,200),
+        tree_green, tree_green, tree_green, blank
+        },
+        { // R4
+        blank, blank, tree_green, tree_green,
+        tree_green, RGBTriple(255,0,0), blank, blank
+        },
+        { // R3
+        blank, blank, RGBTriple(130,40,255), tree_green,
+        tree_green, tree_green, blank, blank
+        },
+        { // R2
+        blank, blank, blank, tree_green,
+        RGBTriple(255, 0, 100), blank, blank, blank
+        },
+        { // R1
+        blank, blank, blank, tree_green,
+        tree_green, blank, blank, blank
         }
     };
     Art8x8 christmas_tree = Art8x8(christmas_tree_colors);
     drawPixelArt(christmas_tree);
-    delay(200);
-
 }
 
 bool Matrix::isEdge(int r, int c, int direction) 
@@ -350,11 +361,66 @@ void Matrix::setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b)
 
 void Matrix::setPixel(uint8_t n, RGBTriple c)
 {
-    matrix->setPixelColor(n, c.r, c.g, c.b);
+    matrix->setPixelColor(n, c.getR(), c.getG(), c.getB());
 }
 
-void Matrix::updatePixel(AnimationPixelUpdate pxUpdate)
+// void Matrix::updatePixel(AnimationPixelUpdate pxUpdate)
+// {
+//     setPixel(toSingle(pxUpdate.getPost()), pxUpdate.c);
+//     show();
+// }
+
+void Matrix::setCursor(int x, int y)
 {
-    setPixel(toSingle(pxUpdate.getPost()), pxUpdate.c);
-    show();
+    matrix->setCursor(x, y);
+}
+
+void Matrix::print(const __FlashStringHelper * f)
+{
+    matrix->print(f);
+}
+
+int Matrix::width()
+{
+    return matrix->width();
+}
+
+void Matrix::fillScreen(uint16_t c)
+{
+    matrix->fillScreen(c);
+}
+
+void Matrix::setTextWrap(bool b)
+{
+    matrix->setTextWrap(b);
+}
+
+void Matrix::drawParticle(Particle& p)
+{
+    pxind n = toSingle(p.getX(), p.getY());
+    setPixel(n, p.getRGB());
+}
+
+void fireworks()
+{
+    // Create base firework
+    FireworkBase fw = FireworkBase(3, 0, RGBTriple(50, 50, 50), 4, 0, 1);
+    
+    do
+    {
+        drawParticle(fw);
+        fw.step();
+    } while !(fw.exploded());
+    
+    // Generate explosion particles
+    uint8_t num_particles = random(3, 6);
+    Particle* p_explosions = fw.generate_explosion(num_particles);
+    for (uint8_t i; i < num_particles; i++)
+    {
+        p_explosions[i].setDX()
+    }
+
+    // Loop through till each particle is gone
+
+    delete[] p_explosions;
 }
