@@ -6,6 +6,18 @@
 typedef uint8_t pxind;
 typedef uint8_t ttl_t;
 
+#define OFFSET_TL ParticleOffset(-1, 1);
+#define OFFSET_T ParticleOffset(0, 1);
+#define OFFSET_TR ParticleOffset(1, 1);
+#define OFFSET_R ParticleOffset(1, 0);
+#define OFFSET_BR ParticleOffset(1, -1);
+#define OFFSET_B ParticleOffset(0, -1);
+#define OFFSET_BL ParticleOffset(-1, -1);
+#define OFFSET_L ParticleOffset(-1, 0);
+
+
+ParticleOffset rand_offset();
+
 class Pixel
 {
     protected:
@@ -23,13 +35,26 @@ class Pixel
         uint8_t getY() { return y; }
 };
 
-class Particle : Pixel
+class ParticleOffset
+{
+    private:
+        int8_t x,y;
+    public:
+        ParticleOffset(int8_t _x, int8_t _y) : x(_x), y(_y) {};
+        uint8_t adj_n();
+        int8_t getX() { return x; }
+        int8_t getY() { return y; }
+
+}
+
+class Particle : public Pixel
 {
     protected:
         ttl_t ttl;
         uint8_t dx;
         uint8_t dy;
     public:
+        Particle();
         Particle(pxind x, pxind y, RGBTriple color, ttl_t ttl, uint8_t dx, uint8_t dy);
         Particle(pxind x, pxind y, cval r, cval g, cval b, ttl_t ttl, uint8_t dx, uint8_t dy);
         uint8_t getDX() { return dx; }
@@ -38,15 +63,21 @@ class Particle : Pixel
         void setDY(uint8_t _dy) { dy = _dy; }
         void tick() { ttl--; }
         void step(bool update_ttl = true);
+        ttl_t getTTL() { return ttl; }
 
 };
 
-class FireworkBase: Particle
+class FireworkBase : Particle
 {   
+    private:
+        uint8_t exp_offsets_used = 0;
     public:
         FireworkBase(pxind x, pxind y, RGBTriple color, ttl_t ttl, uint8_t dx, uint8_t dy);
         bool exploded();
         Particle* generate_explosion(uint8_t num_particles);
+        void toggle_offset(ParticleOffset& o);
+        bool exp_offset_used(ParticleOffset& o);
+        Particle from_offset(ParticleOffset& o);
 
 };
 

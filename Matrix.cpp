@@ -403,9 +403,10 @@ void Matrix::drawParticle(Particle& p)
 
 void fireworks()
 {
+    clear();
     // Create base firework
     FireworkBase fw = FireworkBase(3, 0, RGBTriple(50, 50, 50), 4, 0, 1);
-    
+    // TODO deal with clearing particles
     do
     {
         drawParticle(fw);
@@ -415,11 +416,38 @@ void fireworks()
     // Generate explosion particles
     uint8_t num_particles = random(3, 6);
     Particle* p_explosions = fw.generate_explosion(num_particles);
-    for (uint8_t i; i < num_particles; i++)
+    
+    bool live = true;
+    while (live)
     {
-        p_explosions[i].setDX()
+        for (auto& p : p_explosions)
+        {
+            drawParticle(p);
+            p.step();
+            if (p.getTTL() < 1)
+            {
+                live = false;
+            }
+        }
+        //Delay
+        clear();
     }
 
+    do 
+    {
+        live = false; // Reset live
+        for (uint8_t i = 0; i < num_particles; i++)
+        {
+            if (p_explosions[i].getTTL() < 1) continue;
+            live = true; // This particle is still alive
+            drawParticle(p_explosions[i]);
+            p_explosions[i].step();
+            
+            //Conditionally decremement dy for gravity effect
+        }
+        //Delay
+        clear();
+    } while (live);
     // Loop through till each particle is gone
 
     delete[] p_explosions;
