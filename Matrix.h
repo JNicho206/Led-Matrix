@@ -3,6 +3,7 @@
 #include <Adafruit_NeoMatrix.h>
 #include <PixelArt.h>
 #include <Pixel.h>
+#include "Arduino.h"
 // #include <Animation.h>
 
 #define UPLEFT 0
@@ -31,6 +32,7 @@ class Matrix {
     private:
         Adafruit_NeoMatrix *matrix;
         MatrixSize size;
+        void _setPixel(uint8_t n, RGBTriple c);
     public:
         Matrix(uint16_t w, uint16_t h, uint8_t pin);
         void drawPixelArt(const PixelArt& art);
@@ -52,6 +54,9 @@ class Matrix {
         void setPixel(uint8_t n, uint32_t c);
         void setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b);
         void setPixel(uint8_t n, RGBTriple c);
+        void setPixel(uint8_t row, uint8_t col, uint32_t c);
+        void setPixel(uint8_t row, uint8_t col, uint8_t r, uint8_t g, uint8_t b);
+        void setPixel(uint8_t row, uint8_t col, RGBTriple c);
         void drawRainbow(uint16_t totalTime, uint16_t delay);
         void drawRainbow();
         void drawTree();

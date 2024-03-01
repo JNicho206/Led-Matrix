@@ -4,7 +4,7 @@
 Matrix::Matrix(uint16_t w, uint16_t h, uint8_t pin) 
     : 
     size(MatrixSize(w, h)), 
-    matrix(new Adafruit_NeoMatrix(int(w), int(h), pin, NEO_MATRIX_BOTTOM     + NEO_MATRIX_RIGHT + NEO_MATRIX_COLUMNS + NEO_MATRIX_ZIGZAG,
+    matrix(new Adafruit_NeoMatrix(int(w), int(h), pin, NEO_MATRIX_BOTTOM + NEO_MATRIX_LEFT + NEO_MATRIX_COLUMNS + NEO_MATRIX_PROGRESSIVE,
                                                         NEO_GRB            + NEO_KHZ800))
 {
     begin();
@@ -45,33 +45,34 @@ void Matrix::drawRainbow(uint16_t totalTime, uint16_t delayTime)
     }
 }
 
-void Matrix::fireworks()
-{
-    //Maintain state of matrix inside object
-    //Each pixel value
-}
 
 uint8_t Matrix::toSingle(const MatrixPair& p)
 {
-    const int cols = 8;
-    uint8_t col;
-    // Reverse the column index on every alternate row
-    if (p.row % 2 == 1) {
-        col = cols - 1 - p.col;
+    uint8_t single;
+    if (p.col % 2 == 0)
+    {
+        single = (p.col * 8) + p.row;
     }
-    uint8_t single = p.row * cols + col;
+    else 
+    {
+        single = ((p.col + 1) * 8) - 1; // Leftmost pixel
+        single -= p.row; // Odd rows decrease left to right;
+    }
     return single;
 }
 
 uint8_t Matrix::toSingle(pxind x, pxind y)
 {
-    const int cols = 8;
-    uint8_t col;
-    // Reverse the column index on every alternate row
-    if (x % 2 == 1) {
-        col = cols - 1 - y;
+    uint8_t single;
+    if (y % 2 == 0)
+    {
+        single = (y * 8) + x;
     }
-    uint8_t single = x * cols + col;
+    else 
+    {
+        single = ((y + 1) * 8) - 1; // Leftmost pixel
+        single -= x; // Odd rows decrease left to right;
+    }
     return single;
 }
 
@@ -349,6 +350,11 @@ void Matrix::show()
     matrix->show();
 }
 
+void Matrix::_setPixel(uint8_t n, RGBTriple c)
+{
+    matrix->setPixelColor(n, c.getR(), c.getG(), c.getB());
+}
+
 void Matrix::setPixel(uint8_t n, uint32_t c)
 {
     matrix->setPixelColor(n, c);
@@ -356,13 +362,32 @@ void Matrix::setPixel(uint8_t n, uint32_t c)
 
 void Matrix::setPixel(uint8_t n, uint8_t r, uint8_t g, uint8_t b)
 {
-    matrix->setPixelColor(n, r, g, b);
+    _setPixel(n, RGBTriple(r,g,b));
 }
 
 void Matrix::setPixel(uint8_t n, RGBTriple c)
 {
-    matrix->setPixelColor(n, c.getR(), c.getG(), c.getB());
+    _setPixel(n, c);
 }
+
+void Matrix::setPixel(uint8_t row, uint8_t col, uint32_t c)
+{
+    uint8_t n = toSingle(row, col);
+    matrix->setPixelColor(n, c);
+}
+
+void Matrix::setPixel(uint8_t row, uint8_t col, uint8_t r, uint8_t g, uint8_t b)
+{
+    uint8_t n = toSingle(row, col);
+    _setPixel(n, RGBTriple(r,g,b));
+}
+
+void Matrix::setPixel(uint8_t row, uint8_t col, RGBTriple c)
+{
+    uint8_t n = toSingle(row, col);
+    _setPixel(n, c);
+}
+
 
 // void Matrix::updatePixel(AnimationPixelUpdate pxUpdate)
 // {
@@ -401,54 +426,49 @@ void Matrix::drawParticle(Particle& p)
     setPixel(n, p.getRGB());
 }
 
-void fireworks()
+void Matrix::fireworks()
 {
-    clear();
     // Create base firework
     FireworkBase fw = FireworkBase(3, 0, RGBTriple(50, 50, 50), 4, 0, 1);
     // TODO deal with clearing particles
     do
     {
-        drawParticle(fw);
-        fw.step();
-    } while !(fw.exploded());
-    
-    // Generate explosion particles
-    uint8_t num_particles = random(3, 6);
-    Particle* p_explosions = fw.generate_explosion(num_particles);
-    
-    bool live = true;
-    while (live)
-    {
-        for (auto& p : p_explosions)
-        {
-            drawParticle(p);
-            p.step();
-            if (p.getTTL() < 1)
-            {
-                live = false;
-            }
-        }
-        //Delay
         clear();
-    }
+        drawParticle(fw);
+        show();
+        fw.step();
+        delay(200);
+    } while (!(fw.exploded()));
+    
 
+
+    // Generate explosion particles
+    //uint8_t num_particles = random(3, 6);
+    uint8_t num_particles = 1;
+    //Particle* p_explosions = fw.generate_explosion(num_particles);
+    Particle p_explosions = Particle(4, 3, RGBTriple(50,50,50), 3, 1, 0);
+    bool live;
     do 
     {
         live = false; // Reset live
-        for (uint8_t i = 0; i < num_particles; i++)
-        {
-            if (p_explosions[i].getTTL() < 1) continue;
-            live = true; // This particle is still alive
-            drawParticle(p_explosions[i]);
-            p_explosions[i].step();
+        // for (uint8_t i = 0; i < num_particles; i++)
+        // {
+        //     if (p_explosions[i].getTTL() < 1) continue; // Live stays false if all particles are done
+        //     live = true; // This particle is still alive
+        //     drawParticle(p_explosions[i]);
+        //     p_explosions[i].step();
             
-            //Conditionally decremement dy for gravity effect
-        }
+        //     //Conditionally decremement dy for gravity effect
+        // }
+        drawParticle(p_explosions);
+        show();
+        p_explosions.step();
+        if (p_explosions.getTTL() >= 1) live = true;
         //Delay
+        delay(100);
         clear();
     } while (live);
     // Loop through till each particle is gone
 
-    delete[] p_explosions;
+    //delete[] p_explosions;
 }

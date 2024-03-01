@@ -95,11 +95,12 @@ Particle* FireworkBase::generate_explosion(uint8_t num_particles)
     while (num_particles)
     {
         ParticleOffset offset = rand_offset();
-        while (!exp_offset_used(offset)) {offset = rand_offset();}
-        toggle_offset(offset);
+        // while (!exp_offset_used(offset)) {offset = rand_offset();}
+        // toggle_offset(offset);
 
         Particle p = from_offset(offset);
-        particles[num_particles--] = p; 
+        particles[num_particles] = p; 
+        num_particles -= 1;
     }
 
     return particles;
@@ -110,42 +111,41 @@ uint8_t ParticleOffset::adj_n()
     // TL
     if (x == -1 && y == 1)
     {
-        return 1;
+        return 0;
     }
     // T
     if (x == 0 && y == 1)
     {
-        return 2;
+        return 1;
     }
     // TR
     if (x == 1 && y == 1)
     {
-        return 3;
+        return 2;
     }
     // R
     if (x == 1 && y == 0)
     {
-        return 4;
+        return 3;
     }
     // BR
     if (x == 1 && y == -1)
     {
-        return 5;
+        return 4;
     }
     // B
     if (x == 0 && y == -1)
     {
-        return 6;
+        return 5;
     }
     // BL
     if (x == -1 && y == -1)
     {
-        return 7;
+        return 6;
     }
     // L
     if (x == -1 && y == 0)
     {
-        return 8;
+        return 7;
     }
-    return 0;
 }

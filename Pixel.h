@@ -2,6 +2,7 @@
 #define _H_PIXEL_
 #include <stdint.h>
 #include <Color.h>
+#include "Arduino.h"
 
 typedef uint8_t pxind;
 typedef uint8_t ttl_t;
@@ -16,7 +17,7 @@ typedef uint8_t ttl_t;
 #define OFFSET_L ParticleOffset(-1, 0);
 
 
-ParticleOffset rand_offset();
+
 
 class Pixel
 {
@@ -45,7 +46,7 @@ class ParticleOffset
         int8_t getX() { return x; }
         int8_t getY() { return y; }
 
-}
+};
 
 class Particle : public Pixel
 {
@@ -67,7 +68,7 @@ class Particle : public Pixel
 
 };
 
-class FireworkBase : Particle
+class FireworkBase : public Particle
 {   
     private:
         uint8_t exp_offsets_used = 0;
