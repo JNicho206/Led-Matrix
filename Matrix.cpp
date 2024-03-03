@@ -429,7 +429,9 @@ void Matrix::drawParticle(Particle& p)
 void Matrix::fireworks()
 {
     // Create base firework
-    FireworkBase fw = FireworkBase(3, 0, RGBTriple(50, 50, 50), 4, 0, 1);
+    pxind x_base = random(2, 6);
+    RGBTriple color = RGBTriple(random(0, 200), random(0, 200), random(0, 200));
+    FireworkBase fw = FireworkBase(x_base, 0, color, 4, 0, 1);
     // TODO deal with clearing particles
     do
     {
@@ -444,31 +446,27 @@ void Matrix::fireworks()
 
     // Generate explosion particles
     //uint8_t num_particles = random(3, 6);
-    uint8_t num_particles = 1;
-    //Particle* p_explosions = fw.generate_explosion(num_particles);
-    Particle p_explosions = Particle(4, 3, RGBTriple(50,50,50), 3, 1, 0);
+    uint8_t num_particles = 5;
+    Particle* p_explosions = fw.generate_explosion(num_particles);
+    //Particle p_explosions = Particle(4, 3, RGBTriple(50,50,50), 3, 1, 0);
     bool live;
     do 
     {
         live = false; // Reset live
-        // for (uint8_t i = 0; i < num_particles; i++)
-        // {
-        //     if (p_explosions[i].getTTL() < 1) continue; // Live stays false if all particles are done
-        //     live = true; // This particle is still alive
-        //     drawParticle(p_explosions[i]);
-        //     p_explosions[i].step();
+        for (uint8_t i = 0; i < num_particles; i++)
+        {
+            if (p_explosions[i].getTTL() < 1) continue; // Live stays false if all particles are done
+            live = true; // This particle is still alive
+            drawParticle(p_explosions[i]);
+            p_explosions[i].step();
             
-        //     //Conditionally decremement dy for gravity effect
-        // }
-        drawParticle(p_explosions);
+            //Conditionally decremement dy for gravity effect
+        }
         show();
-        p_explosions.step();
-        if (p_explosions.getTTL() >= 1) live = true;
-        //Delay
         delay(100);
         clear();
     } while (live);
     // Loop through till each particle is gone
 
-    //delete[] p_explosions;
+    delete[] p_explosions;
 }

@@ -99,8 +99,7 @@ Particle* FireworkBase::generate_explosion(uint8_t num_particles)
         // toggle_offset(offset);
 
         Particle p = from_offset(offset);
-        particles[num_particles] = p; 
-        num_particles -= 1;
+        particles[--num_particles] = p; 
     }
 
     return particles;
