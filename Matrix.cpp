@@ -470,3 +470,91 @@ void Matrix::fireworks()
 
     delete[] p_explosions;
 }
+
+void Matrix::drawPixel(Pixel& p)
+{
+    setPixel(p.getX(), p.getY(), p.getRGB());
+}
+
+void Matrix::drawPixel(Pixel& p, RGBTriple c)
+{
+    setPixel(p.getX(), p.getY(), c);
+}
+
+// void Matrix::drawPixel(Pixel& p, uint32_t c)
+// {
+//     setPixel(p.getX(), p.getY(), c);
+// }
+
+void Matrix::drawPixelSet(PixelSet& set)
+{
+    for (auto p : set.px)
+    {
+        drawPixel(p);
+    }
+}
+
+void Matrix::drawPixelSet(PixelSet& set, RGBTriple c)
+{
+    for (Pixel p : set.px)
+    {
+        drawPixel(p, c);
+    }
+}
+
+void Matrix::rainbowGrad(uint8_t iterations = 3, uint64_t delay)
+{
+    uint8_t numSets = 8;
+    MatrixPair pr1[1] = { MatrixPair(7,7) };
+    MatrixPair pr2[3] = { MatrixPair(7,6), MatrixPair(6,6), MatrixPair(6,7) };
+    MatrixPair pr3[7] = { MatrixPair(7,5), MatrixPair(7,4), MatrixPair(6,5), 
+                        MatrixPair(5,5), MatrixPair(5,6), MatrixPair(5,7), 
+                        MatrixPair(4,7) };
+    MatrixPair pr4[10] = { MatrixPair(7,3), MatrixPair(6,3), MatrixPair(6,4), 
+                        MatrixPair(5,4), MatrixPair(4,4), MatrixPair(4,5), 
+                        MatrixPair(4,6), MatrixPair(3,6), MatrixPair(3,7),
+                        MatrixPair(2,7) };
+    MatrixPair pr5[12] = { MatrixPair(7,2), MatrixPair(6,2), MatrixPair(5,2), 
+                        MatrixPair(5,3), MatrixPair(4,3), MatrixPair(3,3), 
+                        MatrixPair(3,4), MatrixPair(3,5), MatrixPair(2,5),
+                        MatrixPair(2,6), MatrixPair(1,6), MatrixPair(1,7) };
+    MatrixPair pr6[14] = { MatrixPair(7,1), MatrixPair(6,1), MatrixPair(5,1), 
+                        MatrixPair(4,1), MatrixPair(4,2), MatrixPair(3,2), 
+                        MatrixPair(2,2), MatrixPair(2,3), MatrixPair(2,4),
+                        MatrixPair(1,4), MatrixPair(1,5), MatrixPair(0,5),
+                        MatrixPair(0,6), MatrixPair(0,7) };
+    MatrixPair pr7[12] = { MatrixPair(7,0), MatrixPair(6,0), MatrixPair(5,0), 
+                        MatrixPair(4,0), MatrixPair(3,0), MatrixPair(3,1), 
+                        MatrixPair(2,1), MatrixPair(1,1), MatrixPair(1,2),
+                        MatrixPair(1,3), MatrixPair(0,3), MatrixPair(0,4) };
+    MatrixPair pr8[5] = { MatrixPair(2,0), MatrixPair(1,0), MatrixPair(0,0),
+                        MatrixPair(0,1), MatrixPair(0,2) };
+    PixelSet sets[numSets] = {
+        PixelSet(pr1, 1),
+        PixelSet(pr2, 3),
+        PixelSet(pr3, 7),
+        PixelSet(pr4, 10),
+        PixelSet(pr5, 12),
+        PixelSet(pr6, 14),
+        PixelSet(pr7, 12),
+        PixelSet(pr8, 5)      
+    };
+
+    ColorSetNode* head = rainbowColors();
+    ColorSetNode* colors = head;
+
+    while (1)
+    {
+        for (uint8_t i = 0; i < numSets; i++)
+        {
+            if (colors == nullptr)
+            {
+                colors = head;
+                if (iterations--) return;
+            }
+            RGBTriple color = colors->c;
+            colors = colors->next;
+            drawPixelSet(sets[i], color);
+        }
+    }
+}
