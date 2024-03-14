@@ -22,26 +22,16 @@ class RGBTriple
         uint8_t getB() const;
 };
 
-// class Color {
-//     private:
-//         RGBTriple rgb;
-//     public:
+struct ColorSetNode
+{
+    RGBTriple c;
+    struct ColorSetNode* next;
+};
 
-//         /**
-//          * @brief Construct a new Color object
-//          * 
-//          */
-//         Color();
-
-//         /**
-//          * @brief Construct a new Color object
-//          * 
-//          * @param r Red value 0-255
-//          * @param b Blue value 0-255 
-//          * @param g Green value 0-255
-//          */
-//         Color (uint8_t r, uint8_t b, uint8_t g);
-
-
-// };
+/**
+ * @brief Allocates memory on the heap and must be freed.
+ * 
+ * @return ColorSetNode* -- a linked list of colors representing the rainbow
+ */
+ColorSetNode* rainbowColors();
 #endif
