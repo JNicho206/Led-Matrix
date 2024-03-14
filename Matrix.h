@@ -61,6 +61,7 @@ class Matrix {
         void drawRainbow();
         void drawTree();
         void fireworks();
+        void rainbowGrad(uint8_t iterations);
         void drawParticle(Particle& p);
         // void updatePixel(AnimationPixelUpdate pxUpdate);
 };

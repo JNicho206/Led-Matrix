@@ -502,7 +502,7 @@ void Matrix::drawPixelSet(PixelSet& set, RGBTriple c)
     }
 }
 
-void Matrix::rainbowGrad(uint8_t iterations = 3, uint64_t delay)
+void Matrix::rainbowGrad(uint8_t iterations = 3)
 {
     uint8_t numSets = 8;
     MatrixPair pr1[1] = { MatrixPair(7,7) };
@@ -541,20 +541,24 @@ void Matrix::rainbowGrad(uint8_t iterations = 3, uint64_t delay)
     };
 
     ColorSetNode* head = rainbowColors();
-    ColorSetNode* colors = head;
+    ColorSetNode* iter = head;
 
-    while (1)
+    for (uint8_t = 0; i < iterations; i++)
     {
+        clear();
         for (uint8_t i = 0; i < numSets; i++)
         {
-            if (colors == nullptr)
-            {
-                colors = head;
-                if (iterations--) return;
-            }
-            RGBTriple color = colors->c;
-            colors = colors->next;
-            drawPixelSet(sets[i], color);
+            if (!iter) iter = head;
+            drawPixelSet(sets[i], iter->c);
+            iter = iter->next;
         }
+        show();
+        delay(50);
+    }
+
+    while (head != nullptr)
+    {
+        delete head;
+        head = head->next;
     }
 }
