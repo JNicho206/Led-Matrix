@@ -1,6 +1,7 @@
 #ifndef _H_PIXEL_
 #define _H_PIXEL_
 #include <stdint.h>
+#include "Matrix.h"
 #include <Color.h>
 #include "Arduino.h"
 
@@ -35,6 +36,16 @@ class Pixel
         uint8_t getX() { return x; }
         uint8_t getY() { return y; }
 };
+
+class PixelSet
+{
+    private:
+        Pixel* px;
+        uint8_t num;
+    
+    public:
+        PixelSet(MatrixPair* locations, uint8_t num);
+}
 
 class ParticleOffset
 {

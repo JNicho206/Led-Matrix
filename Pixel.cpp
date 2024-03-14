@@ -1,5 +1,13 @@
 #include <Pixel.h>
 
+PixelSet::PixelSet(MatrixPair* locations, uint8_t _num) : num(_num)
+{
+    for (uint8_t i = 0; i < _num; i++)
+    {
+        px[i] = Pixel(locations[i].row, locations[i].col, RGBTriple(255,0,0));
+    }
+}
+
 ParticleOffset rand_offset()
 {
     uint8_t choice = random(0, 7);
