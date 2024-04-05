@@ -1,5 +1,6 @@
 #include <Matrix.h>
-#include <Pixel.h>
+
+
 
 Matrix::Matrix(uint16_t w, uint16_t h, uint8_t pin) 
     : 
@@ -46,6 +47,19 @@ void Matrix::drawRainbow(uint16_t totalTime, uint16_t delayTime)
 }
 
 
+MatrixPair Matrix::toPair(uint8_t n)
+{
+    const int cols = 8;
+    uint8_t row = n / cols;
+    uint8_t col = n % cols;
+
+    // Reverse the column index on every alternate row
+    if (row % 2 == 1) {
+        col = cols - 1 - col;
+    }
+    return MatrixPair(col, row);
+}
+
 uint8_t Matrix::toSingle(const MatrixPair& p)
 {
     uint8_t single;
@@ -76,18 +90,6 @@ uint8_t Matrix::toSingle(pxind x, pxind y)
     return single;
 }
 
-MatrixPair Matrix::toPair(uint8_t n)
-{
-    const int cols = 8;
-    uint8_t row = n / cols;
-    uint8_t col = n % cols;
-
-    // Reverse the column index on every alternate row
-    if (row % 2 == 1) {
-        col = cols - 1 - col;
-    }
-    return MatrixPair(col, row);
-}
 
 void Matrix::drawPixelArt(const PixelArt &art)
 {
@@ -488,23 +490,22 @@ void Matrix::drawPixel(Pixel& p, RGBTriple c)
 
 void Matrix::drawPixelSet(PixelSet& set)
 {
-    for (auto p : set.px)
-    {
-        drawPixel(p);
-    }
 }
 
-void Matrix::drawPixelSet(PixelSet& set, RGBTriple c)
+void Matrix::drawPixelSet(MatrixPair* locations, uint8_t n, RGBTriple c)
 {
-    for (Pixel p : set.px)
+    for (uint8_t i = 0; i < n; i++)
     {
-        drawPixel(p, c);
+        Pixel p = Pixel(locations[i].col, locations[i].row, c);
+        drawPixel(p);
     }
 }
 
 void Matrix::rainbowGrad(uint8_t iterations = 3)
 {
+
     uint8_t numSets = 8;
+    uint8_t num_px[8] = {1,3,7,10,12,14,12,5};
     MatrixPair pr1[1] = { MatrixPair(7,7) };
     MatrixPair pr2[3] = { MatrixPair(7,6), MatrixPair(6,6), MatrixPair(6,7) };
     MatrixPair pr3[7] = { MatrixPair(7,5), MatrixPair(7,4), MatrixPair(6,5), 
@@ -529,32 +530,58 @@ void Matrix::rainbowGrad(uint8_t iterations = 3)
                         MatrixPair(1,3), MatrixPair(0,3), MatrixPair(0,4) };
     MatrixPair pr8[5] = { MatrixPair(2,0), MatrixPair(1,0), MatrixPair(0,0),
                         MatrixPair(0,1), MatrixPair(0,2) };
-    PixelSet sets[numSets] = {
-        PixelSet(pr1, 1),
-        PixelSet(pr2, 3),
-        PixelSet(pr3, 7),
-        PixelSet(pr4, 10),
-        PixelSet(pr5, 12),
-        PixelSet(pr6, 14),
-        PixelSet(pr7, 12),
-        PixelSet(pr8, 5)      
-    };
+    // PixelSet p1 = PixelSet(pr1, 1);
+    // PixelSet sets[numSets] = {
+    //     // PixelSet(pr1, 1),
+    //     // PixelSet(pr2, 3),
+    //     // PixelSet(pr3, 7),
+    //     // PixelSet(pr4, 10),
+    //     // PixelSet(pr5, 12),
+    //     // PixelSet(pr6, 14),
+    //     // PixelSet(pr7, 12),
+    //     // PixelSet(pr8, 5) 
+    //     p1
+    // };
+    
 
     ColorSetNode* head = rainbowColors();
     ColorSetNode* iter = head;
 
-    for (uint8_t = 0; i < iterations; i++)
+    // Integrate with pixel sets
+    // Increase number of colors
+    while (iterations)
     {
-        clear();
-        for (uint8_t i = 0; i < numSets; i++)
+        for (uint8_t i = 0; i < 64; i++)
         {
-            if (!iter) iter = head;
-            drawPixelSet(sets[i], iter->c);
-            iter = iter->next;
+            if (iter == nullptr)
+            {
+                iter = head;
+                iterations--;   
+            }
+            setPixel(i, iter->c);
         }
+        iter = iter->next;
         show();
-        delay(50);
+        delay(250);
     }
+
+    // while (iterations)
+    // {
+    //     clear();
+    //     for (uint8_t i = 0; i < numSets; i++)
+    //     {
+    //         // If end of color set
+    //         if (iter == nullptr)
+    //         {   
+    //             iter = head;
+    //             iterations--;
+    //         }
+    //         drawPixelSet(pr1, num_px[i], iter->c);
+    //         iter = iter->next;
+    //     }
+    //     show();
+    //     delay(100);
+    // }
 
     while (head != nullptr)
     {

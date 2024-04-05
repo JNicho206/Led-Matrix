@@ -1,9 +1,10 @@
 #ifndef _H_PIXEL_
 #define _H_PIXEL_
 #include <stdint.h>
-#include "Matrix.h"
 #include <Color.h>
 #include "Arduino.h"
+#include "Pair.h"
+
 
 typedef uint8_t pxind;
 typedef uint8_t ttl_t;
@@ -16,8 +17,6 @@ typedef uint8_t ttl_t;
 #define OFFSET_B ParticleOffset(0, -1);
 #define OFFSET_BL ParticleOffset(-1, -1);
 #define OFFSET_L ParticleOffset(-1, 0);
-
-
 
 
 class Pixel
@@ -37,15 +36,17 @@ class Pixel
         uint8_t getY() { return y; }
 };
 
+// TODO Minimize Pixelset
 class PixelSet
 {
     private:
-        Pixel* px;
         uint8_t num;
     
     public:
-        PixelSet(MatrixPair* locations, uint8_t num);
-}
+        Pixel* px;
+        PixelSet(MatrixPair *locations, uint8_t num);
+        uint8_t get_num() { return num; }
+};
 
 class ParticleOffset
 {

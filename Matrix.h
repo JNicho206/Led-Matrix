@@ -1,9 +1,11 @@
 #ifndef _H_MATRIX_
-#define _H_MATRIX
+#define _H_MATRIX_
 #include <Adafruit_NeoMatrix.h>
 #include <PixelArt.h>
-#include <Pixel.h>
+#include "Pixel.h"
+#include "Color.h"
 #include "Arduino.h"
+#include "Pair.h"
 // #include <Animation.h>
 
 #define UPLEFT 0
@@ -15,11 +17,7 @@
 #define DOWNLEFT 6
 #define LEFT 7
 
-struct MatrixPair
-{
-    uint8_t row, col;
-    MatrixPair(uint8_t r, uint8_t c) : row(r), col(c) {};
-};
+
 
 struct MatrixSize
 {
@@ -57,6 +55,10 @@ class Matrix {
         void setPixel(uint8_t row, uint8_t col, uint32_t c);
         void setPixel(uint8_t row, uint8_t col, uint8_t r, uint8_t g, uint8_t b);
         void setPixel(uint8_t row, uint8_t col, RGBTriple c);
+        void drawPixel(Pixel& p);
+        void drawPixel(Pixel& p, RGBTriple c);
+        void drawPixelSet(PixelSet& set);
+        void drawPixelSet(MatrixPair* locations, uint8_t n, RGBTriple c);
         void drawRainbow(uint16_t totalTime, uint16_t delay);
         void drawRainbow();
         void drawTree();
