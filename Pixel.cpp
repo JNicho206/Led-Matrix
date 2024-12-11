@@ -1,5 +1,14 @@
 #include <Pixel.h>
 
+// PIXEL CLASS METHODS
+
+RGBTriple Pixel::getRGB()
+{
+    return rgb;
+}
+
+// PIXELSET CLASS METHODS
+
 PixelSet::PixelSet(MatrixPair* locations, uint8_t _num) : num(_num)
 {
     for (uint8_t i = 0; i < _num; i++)
@@ -7,6 +16,8 @@ PixelSet::PixelSet(MatrixPair* locations, uint8_t _num) : num(_num)
         px[i] = Pixel(locations[i].row, locations[i].col, RGBTriple(255,0,0));
     }
 }
+
+// PARTICLEOFFSET CLASS METHODS
 
 ParticleOffset rand_offset()
 {
@@ -33,17 +44,84 @@ ParticleOffset rand_offset()
     }
 }
 
-Particle::Particle() : Pixel(0,0, RGBTriple(0,0,0)), dx(0), dy(0), ttl(0) {}
+uint8_t ParticleOffset::adj_n()
+{
+    // TL
+    if (x == -1 && y == 1)
+    {
+        return 0;
+    }
+    // T
+    if (x == 0 && y == 1)
+    {
+        return 1;
+    }
+    // TR
+    if (x == 1 && y == 1)
+    {
+        return 2;
+    }
+    // R
+    if (x == 1 && y == 0)
+    {
+        return 3;
+    }
+    // BR
+    if (x == 1 && y == -1)
+    {
+        return 4;
+    }
+    // B
+    if (x == 0 && y == -1)
+    {
+        return 5;
+    }
+    // BL
+    if (x == -1 && y == -1)
+    {
+        return 6;
+    }
+    // L
+    if (x == -1 && y == 0)
+    {
+        return 7;
+    }
+}
 
-Particle::Particle(pxind _x, pxind _y, RGBTriple _color, ttl_t _ttl, uint8_t _dx, uint8_t _dy)
- : Pixel(_x, _y, _color),
-    dx(_dx), dy(_dy), ttl(_ttl)
+// LIGHT CLASS METHODS
+
+Light::Light() : Pixel(0,0, RGBTriple(255,255,255)), increasing(true), ttl(0), color(Color(255,255,255)) {};
+
+Light::Light(pxind _x, pxind _y, Color _c, ttl_t _ttl) : Pixel(_x, _y, _c.getBaseRGB()), increasing(true), ttl(_ttl), color(_c) {};
+
+void Light::incBrightness(double n)
+{
+    color.increaseBrightness(n);
+}
+
+void Light::decBrightness(double n)
+{
+    color.decreaseBrightness(n);
+}
+
+void Light::setBrightness(double n)
+{
+    color.setBrightness(n);
+}
+
+// PARTICLE CLASS METHODS
+
+Particle::Particle() : Light(0,0, Color(), 0), dx(0), dy(0) {}
+
+Particle::Particle(pxind _x, pxind _y, RGBTriple _rgb, ttl_t _ttl, uint8_t _dx, uint8_t _dy)
+ : Light(_x, _y, Color(_rgb.getR(), _rgb.getG(), _rgb.getB()), _ttl),
+    dx(_dx), dy(_dy)
 {
 }
 
 Particle::Particle(pxind _x, pxind _y, cval _r, cval _g, cval _b, ttl_t _ttl, uint8_t _dx, uint8_t _dy)
- : Pixel(_x, _y, _r, _g, _b),
-    dx(_dx), dy(_dy), ttl(_ttl)
+ : Light(_x, _y, Color(_r, _g, _b), _ttl),
+    dx(_dx), dy(_dy)
 {
 
 }
@@ -56,10 +134,7 @@ void Particle::step(bool update_ttl = true)
     if (update_ttl) tick();
 }
 
-RGBTriple Pixel::getRGB()
-{
-    return color;
-}
+// FIREWORKBASE CLASS METHODS
 
 FireworkBase::FireworkBase(pxind _x, pxind _y, RGBTriple _color, ttl_t _ttl, uint8_t _dx, uint8_t _dy) 
  : Particle(_x, _y, _color, _ttl, _dx, _dy)
@@ -113,46 +188,3 @@ Particle* FireworkBase::generate_explosion(uint8_t num_particles)
     return particles;
 }
 
-uint8_t ParticleOffset::adj_n()
-{
-    // TL
-    if (x == -1 && y == 1)
-    {
-        return 0;
-    }
-    // T
-    if (x == 0 && y == 1)
-    {
-        return 1;
-    }
-    // TR
-    if (x == 1 && y == 1)
-    {
-        return 2;
-    }
-    // R
-    if (x == 1 && y == 0)
-    {
-        return 3;
-    }
-    // BR
-    if (x == 1 && y == -1)
-    {
-        return 4;
-    }
-    // B
-    if (x == 0 && y == -1)
-    {
-        return 5;
-    }
-    // BL
-    if (x == -1 && y == -1)
-    {
-        return 6;
-    }
-    // L
-    if (x == -1 && y == 0)
-    {
-        return 7;
-    }
-}
