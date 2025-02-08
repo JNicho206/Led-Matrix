@@ -58,7 +58,6 @@ void loop() {
 
   matrix.clear();
   
-
   matrix.fireworks();
 }
 

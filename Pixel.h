@@ -88,7 +88,7 @@ class Light : public Pixel {
         void setTTL(ttl_t t) { ttl = t; };
         Color getColor() { return color; };
         void setColor(Color c) { color = c; };
-        RGBTriple getRGB() { return color.getRGB(); } const;
+        RGBTriple getRGB() { return color.getRGB(); };
         void step(bool update_ttl = true);
         void tick() { ttl--; };
 };

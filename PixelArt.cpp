@@ -52,7 +52,7 @@ Art8x8::Art8x8(RGBTriple c[][8]) : PixelArt(8,8)
     }
 }
 
-RGBTriple Art8x8::getPixelColor(uint8_t r, uint8_t c)
+RGBTriple Art8x8::getPixelColor(uint8_t r, uint8_t c) const
 {
     return pxmap[r][c].getRGB();
 }

@@ -148,16 +148,16 @@ Color::Color(cval _r, cval _g, cval _b) : brightness(1.0)
     if (_r == 255 || _g == 255 || _b == 255)
     {
         base = RGBTriple(_r,_g,_b);
-        Serial.print("Initializing Color with: ");
-        Serial.print(_r); Serial.print(", ");
-        Serial.print(_g); Serial.print(", ");
-        Serial.println(_b);
+        // Serial.print("Initializing Color with: ");
+        // Serial.print(_r); Serial.print(", ");
+        // Serial.print(_g); Serial.print(", ");
+        // Serial.println(_b);
 
         // Your existing code...
-        Serial.print("Base color set to: ");
-        Serial.print(base.getR()); Serial.print(", ");
-        Serial.print(base.getG()); Serial.print(", ");
-        Serial.println(base.getB());
+        // Serial.print("Base color set to: ");
+        // Serial.print(base.getR()); Serial.print(", ");
+        // Serial.print(base.getG()); Serial.print(", ");
+        // Serial.println(base.getB());
         return;
     }
 

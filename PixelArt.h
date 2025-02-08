@@ -13,7 +13,7 @@ class PixelArt
         PixelArt(int w, int h) : w(w), h(h) {};
         virtual int getWidth() = 0;
         virtual int getHeight() = 0;
-        virtual RGBTriple getPixelColor(uint8_t r, uint8_t c) = 0;
+        virtual RGBTriple getPixelColor(uint8_t r, uint8_t c) const = 0;
         virtual Pixel getPixel(uint8_t r, uint8_t c);
         virtual ~PixelArt() {};
 };
@@ -26,7 +26,7 @@ class Art8x8 : public PixelArt
         Art8x8(RGBTriple** colors);
         Art8x8(RGBTriple colors[][8]);
         Pixel getPixel(uint8_t r, uint8_t c) override;
-        RGBTriple getPixelColor(uint8_t r, uint8_t c) override;
+        RGBTriple getPixelColor(uint8_t r, uint8_t c) const override;
         int getWidth() override;
         int getHeight() override;
         virtual ~Art8x8();

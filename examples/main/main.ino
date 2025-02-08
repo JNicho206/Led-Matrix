@@ -1,86 +1,22 @@
+// Adafruit_NeoMatrix example for single NeoPixel Shield.
+// Scrolls 'Howdy' across the matrix in a portrait (vertical) orientation.
+
 #include <Adafruit_GFX.h>
 #include <Adafruit_NeoMatrix.h>
 #include <Adafruit_NeoPixel.h>
 #include <Matrix.h>
 #include <PixelArt.h>
 #include <Color.h>
-#include <IRRemote.hpp>
+
+
+#include <IRremote.h>
+
 #ifndef PSTR
  #define PSTR // Make Arduino Due happy
 #endif
 
 #define MATRIX_PIN 6
 #define IR_PIN 2
-
-#define CMD_UNKNOWN -1
-#define CMD_DEFAULT 0
-#define CMD_ON 1
-#define CMD_OFF 2
-#define CMD_FIREWORKS 100
-#define CMD_RAINBOW 101
-#define CMD_SPARSE_LIGHTS_WHITE 102
-#define CMD_SPARSE_LIGHTS_COLOR 103
-
-
-
-// After running the code, press the buttons on the remote control and observe the serial monitor.
-// Match the button code to the signal and update the values below
-#define SIG_ON 0x0
-#define SIG_OFF 0x1
-#define SIG_FIREWORKS 0x2
-#define SIG_RAINBOW 0x3
-#define SIG_SPARSE_LIGHTS_WHITE 0x4
-#define SIG_SPARSE_LIGHTS_COLOR 0x5
-#define SIG_DEFAULT 0x6
-
-
-uint16_t signalToCommand(unsigned long signal) {
-    switch (signal) {
-        case SIG_ON:
-            return CMD_ON;
-        case SIG_OFF:
-            return CMD_OFF;
-        case SIG_FIREWORKS:
-            return CMD_FIREWORKS;
-        case SIG_RAINBOW:
-            return CMD_RAINBOW;
-        case SIG_SPARSE_LIGHTS_WHITE:
-            return CMD_SPARSE_LIGHTS_WHITE;
-        case SIG_SPARSE_LIGHTS_COLOR:
-            return CMD_SPARSE_LIGHTS_COLOR;
-        default:
-            return CMD_DEFAULT;
-    }
-}
-
-void handleCommand(uint16_t cmd) 
-{
-    switch(cmd)
-    {
-        case CMD_ON:
-            handleTurnOn();
-            break;
-        case CMD_OFF:
-            handleTurnOff();
-            break;
-        case CMD_FIREWORKS:
-            matrix.fireworks();
-            break;
-        case CMD_RAINBOW:
-            matrix.rainbowGrad(3);
-            break;
-        case CMD_SPARSE_LIGHTS_WHITE:
-            matrix.sparseLights();
-            break;
-        case CMD_SPARSE_LIGHTS_COLOR:
-            matrix.sparseLights();
-            break;
-        default:
-            // matrix.aurora();
-            matrix.fireworks();
-            break;
-    }
-}
 
 // MATRIX DECLARATION:
 // Parameter 1 = width of NeoPixel matrix
@@ -104,61 +40,50 @@ void handleCommand(uint16_t cmd)
 
 
 Matrix matrix = Matrix(8, 8, MATRIX_PIN);
-volatile unsigned long signal = SIG_DEFAULT;
-volatile bool wakeFlag = true;
+uint16_t functionIdx = 100;
+IRrecv ir = IRrecv(IR_PIN);
+decode_results results;
 
 void setup() {
-    Serial.begin(9600);
-    while (!Serial);
-    IrReceiver.begin(IR_PIN);
-
+  ir.enableIRIn();
+  Serial.begin(9600);
+  while(!Serial);
 }
+
+
+
+Color c = Color(0,255,255);
 void loop() {
-    if (IrReceiver.decode()) {
-        signal = IrReceiver.decodedIRData.command;
-        IrReceiver.resume();
-        Serial.print("Signal Received: ");
-        Serial.println(signal);
-        uint16_t cmd = signalToCommand(signal);
-        handleCommand(cmd);
-    }
-    else
+
+    for (int i =0; i < 10; i++)
     {
-        // Can try to make a resume instead and store the state
-        handleCommand(cmd);
+      matrix.fireworks();
     }
+    matrix.plasma(1000);
+    matrix.sparseLights(3, c);
 }
+  
 
-void handleTurnOn()
+uint16_t results2function(uint32_t res)
 {
-  wakeFlag = true;
-}
-
-void wakeUp()
-{
-    wakeFlag = true;
-}
-
-void handleTurnOff()
-{   
-
-    Serial.println("Entering sleep mode...");
-
-    delay(100);  // Allow Serial messages to complete
-
-    // Set up interrupt on the IR_PIN to wake up the Arduino
-    attachInterrupt(digitalPinToInterrupt(IR_PIN), wakeUp, CHANGE);
-
-    wakeFlag = false;
-    // Enter power-down mode (sleep until IR receiver wakes it up)
-    LowPower.powherDown(SLEEP_FOREVER, ADC_OFF, BOD_OFF);
-
-    // Might need to put this in a loop until the correct button is pressed
-    // Detach interrupt after waking up
-    detachInterrupt(digitalPinToInterrupt(IR_PIN));
-
-    
-    handleTurnOn();
-
-    Serial.println("Waking up from sleep");
+   switch (res) {
+        case 0x45: return 1;   // ONE
+        case 0x46: return 2;   // TWO
+        case 0x47: return 3;   // THREE
+        case 0x44: return 4;   // FOUR
+        case 0x40: return 5;   // FIVE
+        case 0x43: return 6;   // SIX
+        case 0x7:  return 7;   // SEVEN
+        case 0x15: return 8;   // EIGHT
+        case 0x9:  return 9;   // NINE
+        case 0x16: return 10;  // STAR
+        case 0x19: return 11;  // ZERO
+        case 0xD: return 12;  // POUND
+        case 0x18: return 13;  // UP
+        case 0x8:  return 14;  // LEFT
+        case 0x1C: return 15;  // OK
+        case 0x5A: return 16;  // RIGHT
+        case 0x52: return 17;  // DOWN
+        default: return functionIdx;  // Unknown code
+  }
 }

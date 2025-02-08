@@ -62,7 +62,7 @@ class Matrix {
         void drawParticle(Particle& p);
         void drawLight(Light& l);
         void sparseLights(Colors& colors);
-        void sparseLights(void);
+        void sparseLights(uint16_t iterations = 3, Color c = Color(255,255,255));
         void plasma(uint16_t time);
         // void updatePixel(AnimationPixelUpdate pxUpdate);
 };

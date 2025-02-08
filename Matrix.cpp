@@ -107,7 +107,7 @@ void Matrix::drawTree()
     RGBTriple tree_green = RGBTriple(30,255,0);
     RGBTriple blank = RGBTriple();
     RGBTriple wood = RGBTriple(200,50, 0);
-    const RGBTriple christmas_tree_colors[][8] = {
+    RGBTriple christmas_tree_colors[][8] = {
         { // R8
         blank, blank, blank, wood,
         wood, blank, blank, blank
@@ -570,7 +570,7 @@ void Matrix::rainbowGrad(uint8_t iterations = 3)
     }
 }
 
-void Matrix::sparseLights()
+void Matrix::sparseLights(uint16_t iterations, Color c)
 {
     clear();
     // Lights will take 2.56s to get 0 to 255 or 255 to 0
@@ -578,6 +578,7 @@ void Matrix::sparseLights()
     ttl_t minTTL = 200; // Lights decrease brightness by 1 / 10ms, thus 2s minimum is 2000ms / 10ms = 200
     ttl_t maxTTL = 1000; // 5s maximum is 5000ms / 10ms = 500
     int num = 10;
+    uint16_t light_pool = num * iterations;
     Light* lights = new Light[num];
     double step = 0.01;
     uint8_t step_delay = 10;
@@ -606,6 +607,7 @@ void Matrix::sparseLights()
         lights[i].setX(p.col);
         lights[i].setY(p.row);
         lights[i].setTTL(random(minTTL, maxTTL));
+        lights[i].setColor(c);
         lights[i].setBrightness(0);
         lights[i].setInc(true);
     }
@@ -629,8 +631,9 @@ void Matrix::sparseLights()
         iter++;
     }
 
+    bool active_light = true;
     // Loop through each light and update 
-    while (true)
+    while (active_light)
     {
         for (int i = 0; i < num; i++)
         {
@@ -652,7 +655,7 @@ void Matrix::sparseLights()
                     {
                         lights[i].decBrightness(step);
                     }
-                    else // 3
+                    else if (light_pool > 0)  // 3
                     {
                         // Need a new position for this light
                         MatrixPair p;
@@ -678,6 +681,7 @@ void Matrix::sparseLights()
                         lights[i].setTTL(random(minTTL, maxTTL));
                         lights[i].setBrightness(0);
                         lights[i].setInc(true);
+                        light_pool--;
                     }
                 }
                 
@@ -697,6 +701,16 @@ void Matrix::sparseLights()
         }
         delay(step_delay);
         show();
+
+        active_light = false;
+        for (int i = 0; i < num; i++)
+        {
+            if (lights[i].getBrightness()) 
+            {
+                active_light = true;
+                break;
+            }
+        }
     }
         
 
@@ -845,7 +859,7 @@ void Matrix::sparseLights(Colors& colors)
 
 //Plasma
 void Matrix::plasma(uint16_t len) {
-    for (int time = 0, cycles = 0; cycles < len; time+=96, cycles++)
+    for (uint32_t  time = 0, cycles = 0; cycles < len; time+=96, cycles++)
     {    // Make sure time % 256 == 0
         for (int col = 0; col < width; col++) {
             for (int row = 0; row < height; row++) {
